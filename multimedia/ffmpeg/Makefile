@@ -9,12 +9,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ffmpeg
-PKG_VERSION:=4.3.4
+PKG_VERSION:=4.3.5
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://ffmpeg.org/releases/
-PKG_HASH:=c117d9b778be1be2d3889757567113c5e940bad6913b16f9e86c31509f9d742d
+PKG_HASH:=8e7a2f6d94b5130edd82d8b55ae75da5fc02f98698e8cc6772c413223b7b9092
 PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>, \
 		Ian Leonard <antonlacon@gmail.com>
 
@@ -331,6 +331,7 @@ define Package/libffmpeg-audio-dec
 $(call Package/libffmpeg/Default)
  TITLE+= (audio)
  VARIANT:=audio-dec
+ CONFLICTS:=libffmpeg-full
 endef
 
 define Package/libffmpeg-audio-dec/description
@@ -349,6 +350,7 @@ $(call Package/libffmpeg/Default)
     +PACKAGE_libx264:libx264 \
     +!PACKAGE_libx264:fdk-aac
  VARIANT:=full
+ PROVIDES+=libffmpeg-mini libffmpeg-audio-dec
 endef
 
 
@@ -363,6 +365,7 @@ define Package/libffmpeg-mini
 $(call Package/libffmpeg/Default)
  TITLE+= (mini)
  VARIANT:=mini
+ CONFLICTS:=libffmpeg-full
 endef
 
 define Package/libffmpeg-mini/description

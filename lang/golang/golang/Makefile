@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 GO_VERSION_MAJOR_MINOR:=1.18
-GO_VERSION_PATCH:=8
+GO_VERSION_PATCH:=10
 
 PKG_NAME:=golang
 PKG_VERSION:=$(GO_VERSION_MAJOR_MINOR)$(if $(GO_VERSION_PATCH),.$(GO_VERSION_PATCH))
@@ -16,12 +16,11 @@ PKG_RELEASE:=1
 
 GO_SOURCE_URLS:=https://dl.google.com/go/ \
                 https://mirrors.ustc.edu.cn/golang/ \
-                https://mirrors.nju.edu.cn/golang/ \
-                https://go.dev/dl/
+                https://mirrors.nju.edu.cn/golang/
 
 PKG_SOURCE:=go$(PKG_VERSION).src.tar.gz
 PKG_SOURCE_URL:=$(GO_SOURCE_URLS)
-PKG_HASH:=1f79802305015479e77d8c641530bc54ec994657d5c5271e0172eb7118346a12
+PKG_HASH:=9cedcca58845df0c9474ae00274c44a95c9dfaefb132fc59921c28c7c106f8e6
 
 PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
@@ -203,20 +202,17 @@ endif
 $(eval $(call GoCompiler/AddProfile,Host,$(HOST_BUILD_DIR),$(HOST_GO_PREFIX),$(HOST_GO_VERSION_ID),$(GO_HOST_OS_ARCH),$(HOST_GO_INSTALL_SUFFIX)))
 
 HOST_GO_VARS= \
-	GOHOSTARCH="$(GO_HOST_ARCH)" \
 	GOCACHE="$(GO_BUILD_CACHE_DIR)" \
 	GOENV=off \
 	CC="$(HOSTCC_NOCACHE)" \
 	CXX="$(HOSTCXX_NOCACHE)"
 
-define Host/Configure
+define Host/Compile
 	$(call GoCompiler/Bootstrap/CheckHost,$(BOOTSTRAP_GO_VALID_OS_ARCH))
 	$(call GoCompiler/Host/CheckHost,$(HOST_GO_VALID_OS_ARCH))
 
 	mkdir -p "$(GO_BUILD_CACHE_DIR)"
-endef
 
-define Host/Compile
 	$(call GoCompiler/Bootstrap/Make, \
 		$(HOST_GO_VARS) \
 	)
@@ -275,7 +271,6 @@ PKG_GO_ZBOOTSTRAP_MODS:= \
 PKG_GO_ZBOOTSTRAP_PATH:=$(PKG_BUILD_DIR)/src/internal/buildcfg/zbootstrap.go
 
 PKG_GO_VARS= \
-	GOHOSTARCH="$(GO_HOST_ARCH)" \
 	GOCACHE="$(GO_BUILD_CACHE_DIR)" \
 	GOENV=off \
 	GO_GCC_HELPER_PATH="$$$$PATH" \
@@ -305,11 +300,9 @@ PKG_GO_INSTALL_ARGS= \
 	$(if $(PKG_GO_ASMFLAGS),-asmflags "all=$(PKG_GO_ASMFLAGS)") \
 	$(if $(filter $(GO_PKG_ENABLE_PIE),1),-buildmode pie)
 
-define Build/Configure
-	mkdir -p "$(GO_BUILD_CACHE_DIR)"
-endef
-
 define Build/Compile
+	mkdir -p "$(GO_BUILD_CACHE_DIR)"
+
 	@echo "Building target Go first stage"
 
 	$(call GoCompiler/Package/Make, \
